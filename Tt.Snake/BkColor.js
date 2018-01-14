@@ -2,7 +2,7 @@ var Tt;
 (function (Tt) {
     var Snake;
     (function (Snake) {
-        var BkColor = (function () {
+        var BkColor = /** @class */ (function () {
             function BkColor() {
             }
             BkColor.ContainerColor = "white";

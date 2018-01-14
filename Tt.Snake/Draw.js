@@ -2,7 +2,7 @@ var Tt;
 (function (Tt) {
     var Snake;
     (function (Snake) {
-        var Draw = (function () {
+        var Draw = /** @class */ (function () {
             function Draw() {
             }
             /**
@@ -90,11 +90,11 @@ var Tt;
              */
             Draw.RefreshDraw = function (bodys, container) {
                 if (bodys != null && bodys.length > 0) {
-                    //for (let i = 0; i < bodys.length; i++) {
-                    //    Draw.DrawBkColorContainer(container, bodys[i].Y, bodys[i].X, BkColor.SnakeBodyColor);
-                    //}
+                    for (var i = 0; i < bodys.length; i++) {
+                        Draw.DrawBkColorContainer(container, bodys[i].Y, bodys[i].X, Snake.BkColor.SnakeBodyColor);
+                    }
                     //优化
-                    Draw.DrawBkColorContainer(container, bodys[0].Y, bodys[0].X, Snake.BkColor.SnakeBodyColor);
+                    // Draw.DrawBkColorContainer(container, bodys[0].Y, bodys[0].X, BkColor.SnakeBodyColor);
                 }
             };
             Draw.GetColor = function (row, col, container) {

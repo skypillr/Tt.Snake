@@ -2,7 +2,7 @@ var Tt;
 (function (Tt) {
     var Snake;
     (function (Snake) {
-        var Common = (function () {
+        var Common = /** @class */ (function () {
             function Common() {
             }
             Common.Random = function (maxValue) {

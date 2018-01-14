@@ -2,7 +2,7 @@ var Tt;
 (function (Tt) {
     var Snake;
     (function (Snake) {
-        var SnakeBody = (function () {
+        var SnakeBody = /** @class */ (function () {
             function SnakeBody(x, y) {
                 this.X = x;
                 this.Y = y;

@@ -94,11 +94,11 @@
         static RefreshDraw(bodys: Array<SnakeBody>, container: HTMLTableElement): void {
             if (bodys != null && bodys.length > 0) {
               
-                //for (let i = 0; i < bodys.length; i++) {
-                //    Draw.DrawBkColorContainer(container, bodys[i].Y, bodys[i].X, BkColor.SnakeBodyColor);
-                //}
+                for (let i = 0; i < bodys.length; i++) {
+                    Draw.DrawBkColorContainer(container, bodys[i].Y, bodys[i].X, BkColor.SnakeBodyColor);
+                }
                 //优化
-                Draw.DrawBkColorContainer(container, bodys[0].Y, bodys[0].X, BkColor.SnakeBodyColor);
+               // Draw.DrawBkColorContainer(container, bodys[0].Y, bodys[0].X, BkColor.SnakeBodyColor);
             }
         }
 

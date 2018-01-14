@@ -9,20 +9,24 @@
         private _curMoveDirection: Direction;
         private _bodys: Array<SnakeBody>;
         private _speed: number;
+        private speedTimeSlice: number;
+        private accuTime: number;
         private _isPaused: boolean;
         private _foodCount: number;
         private _foodCountCur: number;
-        
 
-        constructor(container: HTMLTableElement, infobar:HTMLSpanElement, rowNums: number, colNums) {
+
+        constructor(container: HTMLTableElement, infobar: HTMLSpanElement, rowNums: number, colNums) {
             this._container = container;
             this._infobar = infobar;
             this._rowNums = rowNums;
             this._colNums = colNums;
 
             //固定值
-            this._foodCount = 30;
+            this._foodCount = 100;
             this._foodCountCur = this._foodCount;
+            this.speedTimeSlice = 300;
+            this.accuTime = 0;
             this._speed = 500;
             this._curMoveDirection = Common.Random(3);
 
@@ -35,7 +39,16 @@
             this.InitEvent()
         }
 
-
+        SpeedAdjust(deltTime: number): boolean {
+            let res: boolean = false;
+            this.accuTime += deltTime;
+            if (this.accuTime > this.speedTimeSlice) {
+                this.accuTime = 0;
+                return true;
+            } else {
+                return false;
+            }
+        }
         /**
          * 初始化container
          */
@@ -91,7 +104,7 @@
          * 初始化事件监听
          */
         private InitEvent(): void {
-            document.onkeydown=(ev) => {
+            document.onkeydown = (ev) => {
                 switch (ev.keyCode) {
                     case 38://up
                         if (this._curMoveDirection != Direction.Down) {
@@ -115,7 +128,7 @@
                         break;
                 }
             };
-              
+
         }
 
         /**
@@ -124,12 +137,36 @@
         Run(): void {
             this._isPaused = true;
             let that = this;
+
             this._timer = setInterval(function () {
                 Draw.ClearDraw(that._bodys, that._container);
                 that.MoveNext();
                 Draw.RefreshDraw(that._bodys, that._container);
                 that._infobar.innerText = "得分：" + (that._bodys.length - 1).toString() + "  食物：" + that._foodCountCur.toString();
             }, this._speed);
+        }
+
+        GameLoop(): void {
+            this._isPaused = false;
+            let that = this;
+            var g = function () {
+                var thisTime = Date.now();
+                appGlobal.deltTime = thisTime - appGlobal.lastTime;
+                appGlobal.lastTime = thisTime;
+                Draw.ClearDraw(that._bodys, that._container);
+                that.MoveNext();
+                Draw.RefreshDraw(that._bodys, that._container);
+                that._infobar.innerText = "得分：" + (that._bodys.length - 1).toString() + "  食物：" + that._foodCountCur.toString();
+                if (that._isPaused) {
+                    alert("游戏结束");
+                } else {
+                    requestAnimFrame(g, null)
+                }
+
+            };
+
+            requestAnimFrame(g, null);
+
         }
 
         /**
@@ -140,37 +177,38 @@
             let newHead = new SnakeBody(0, 0);
             newHead.X = head.X;
             newHead.Y = head.Y;
+            let res: boolean = this.SpeedAdjust(appGlobal.deltTime);
+            if (res) {
+                switch (this._curMoveDirection) {
+                    case Direction.Up:
+                        newHead.Y = newHead.Y - 1;
+                        break;
+                    case Direction.Down:
+                        newHead.Y = newHead.Y + 1;
+                        break;
+                    case Direction.Left:
+                        newHead.X = newHead.X - 1;
+                        break;
+                    case Direction.Right:
+                        newHead.X = newHead.X + 1;
+                        break;
+                }
+                if (this.IsFoodNextStep(newHead.Y, newHead.X)) {
+                    this._bodys.unshift(newHead);
+                    this._foodCountCur--;
+                    this.GenerateFood();
 
-            switch (this._curMoveDirection) {
-                case Direction.Up:
-                    newHead.Y = newHead.Y - 1;
-                    break;
-                case Direction.Down:
-                    newHead.Y = newHead.Y + 1;
-                    break;
-                case Direction.Left:
-                    newHead.X = newHead.X - 1;
-                    break;
-                case Direction.Right:
-                    newHead.X = newHead.X + 1;
-                    break;
-            }
-            if (this.IsFoodNextStep(newHead.Y, newHead.X)) {
-                this._bodys.unshift(newHead);
-                this._foodCountCur--;
-                this.GenerateFood();
-
-            } else {
-                this._bodys.unshift(newHead);
-                this._bodys.pop();
-                if (this.IsGameOver(newHead)) {
-                    this._isPaused = true;
-                    alert("游戏结束");
-                    clearInterval(this._timer);
-                    return;
+                } else {
+                    this._bodys.unshift(newHead);
+                    this._bodys.pop();
+                    if (this.IsGameOver(newHead)) {
+                        this._isPaused = true;
+                        //alert("游戏结束");
+                        //clearInterval(this._timer);
+                        return;
+                    }
                 }
             }
-
 
         }
 
@@ -220,7 +258,7 @@
                 if (!Draw.IsFilledColorAlready(this._container, row, col)) {
                     Draw.DrawBkColorContainer(this._container, row, col, BkColor.FoodColor);
                     this._foodCountCur++;
-                }  
+                }
             }
         }
     }
